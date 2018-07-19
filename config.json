@@ -1,0 +1,55 @@
+{
+	"microservices": {
+		"rest": {
+			"name": "rest",
+			"connections": [
+                "auth@localhost:9704",
+                "user@localhost:9702",
+                "company@localhost:9701",
+                "task@localhost:9703",
+                "timetracker@localhost:9705"
+			],
+			"server": {
+				"port": 3000
+			}
+		},
+		"company": {
+			"name": "company",
+			"connection": {
+				"host": "localhost",
+				"port": 9701
+			}
+        },
+        "user": {
+			"name": "user",
+			"connection": {
+				"host": "localhost",
+				"port": 9702
+			}
+        },
+        "task": {
+			"name": "task",
+			"connection": {
+				"host": "localhost",
+				"port": 9703
+			}
+        },
+        "auth": {
+			"name": "auth",
+			"connection": {
+				"host": "localhost",
+				"port": 9704
+			}
+        },
+        "timetracker": {
+			"name": "timetracker",
+			"connection": {
+				"host": "localhost",
+				"port": 9705
+			}
+        }
+	},
+	"mongodb": {
+		"link": "mongodb://ascold2018:ascold2018@ds237120.mlab.com:37120/simple-timetracker-server"
+	}
+}

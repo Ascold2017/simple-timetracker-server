@@ -4,9 +4,16 @@
   "description": "��#\u0000 \u0000s\u0000i\u0000m\u0000p\u0000l\u0000e\u0000-\u0000t\u0000i\u0000m\u0000e\u0000t\u0000r\u0000a\u0000c\u0000k\u0000e\u0000r\u0000-\u0000s\u0000e\u0000r\u0000v\u0000e\u0000r\u0000\r\u0000 \u0000",
   "main": "app.js",
   "dependencies": {
+    "@koa/cors": "^2.2.2",
+    "@nauma/node-microservice": "^1.0.6",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "express": "^4.16.3",
+    "koa": "^2.5.2",
+    "koa-bodyparser": "^4.2.1",
+    "koa-json": "^2.0.2",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
     "mongoose": "^5.2.4",
     "socket.io": "^2.1.1"
   },

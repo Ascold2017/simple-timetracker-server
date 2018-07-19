@@ -1,14 +1,31 @@
-const router = require('express').Router()
-const companyEmitter = global.GLOBAL_EVENTS.companyEmitter
-const authEmitter = global.GLOBAL_EVENTS.authEmitter
-const userEmitter = global.GLOBAL_EVENTS.userEmitter
-const taskEmitter = global.GLOBAL_EVENTS.taskEmitter
-const timetrackerEmitter = global.GLOBAL_EVENTS.timetrackerEmitter
+const config = require('../../config')
 
-router.post('/createCompany', ( req, res ) => { companyEmitter.emit('create', { req, res }) })
+const ms = require('@nauma/node-microservice')
+const koa = require('koa')
+const koaCors = require('@koa/cors')
+const koaJson = require('koa-json')
+const bodyParser = require('koa-bodyparser')
+const koaStatic = require('koa-static')
+const router = require('./routes')
 
-router.post('/createUser', ( req, res ) => { authEmitter.emit('register', { req, res }) })
+const App = new koa()
 
-router.post('/createTask', (req, res) => { taskEmitter.emit('create', { req, res })})
+App.use(koaStatic(__dirname + '/../../' + 'public'));
+App.use(koaJson())
+App.use(koaCors())
+App.use(bodyParser())
+App
+  .use(router.routes())
+  .use(router.allowedMethods());
 
-module.exports = router
+  App.use(function (ctx) {
+	if(ctx.status === 404) {
+		ctx.body = {
+			status: false,
+			error: true,
+			message: 'method not found'
+		}
+	}
+})
+
+App.listen(config.microservices.rest.server.port)

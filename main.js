@@ -1,0 +1,7 @@
+require('./database')
+require('./server/rest')
+require('./server/auth')
+require('./server/company')
+require('./server/user')
+require('./server/task')
+require('./server/timetracker')

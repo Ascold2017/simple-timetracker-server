@@ -10,18 +10,16 @@ const user = rest.get('user')
 const task = rest.get('task')
 const timetracker = rest.get('timetracker')
 
-
 restRouter.post('/api/createCompany', (ctx, next) => {
-
-    new Promise (resolve => {
+    return new Promise (resolve => {
         console.log('CreateCompany: ', ctx.request.body)
-        company.send('create', ctx.response.body, response => resolve(response))
+        company.send('create', ctx.request.body, response => resolve(response))
     })
     .then(response => {
+        console.log(response)
         ctx.body = response
         next()
     })
-   
 })
 
 module.exports = restRouter

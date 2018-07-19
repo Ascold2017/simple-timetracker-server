@@ -14,9 +14,8 @@ App.use(koaStatic(__dirname + '/../../' + 'public'));
 App.use(koaJson())
 App.use(koaCors())
 App.use(bodyParser())
-App
-  .use(router.routes())
-  .use(router.allowedMethods());
+App.use(router.routes())
+App.use(router.allowedMethods());
 
   App.use(function (ctx) {
 	if(ctx.status === 404) {

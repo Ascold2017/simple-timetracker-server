@@ -1,0 +1,28 @@
+{
+  "name": "simple-timetracker-server",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000s\u0000i\u0000m\u0000p\u0000l\u0000e\u0000-\u0000t\u0000i\u0000m\u0000e\u0000t\u0000r\u0000a\u0000c\u0000k\u0000e\u0000r\u0000-\u0000s\u0000e\u0000r\u0000v\u0000e\u0000r\u0000\r\u0000 \u0000",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "mongoose": "^5.2.4",
+    "socket.io": "^2.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ascold2017/simple-timetracker-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ascold2017/simple-timetracker-server/issues"
+  },
+  "homepage": "https://github.com/Ascold2017/simple-timetracker-server#readme"
+}

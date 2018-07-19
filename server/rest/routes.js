@@ -12,11 +12,29 @@ const timetracker = rest.get('timetracker')
 
 restRouter.post('/api/createCompany', (ctx, next) => {
     return new Promise (resolve => {
-        console.log('CreateCompany: ', ctx.request.body)
         company.send('create', ctx.request.body, response => resolve(response))
     })
     .then(response => {
-        console.log(response)
+        ctx.body = response
+        next()
+    })
+})
+
+restRouter.post('/api/createUser', (ctx, next) => {
+    return new Promise (resolve => {
+        user.send('create', ctx.request.body, response => resolve(response))
+    })
+    .then(response => {
+        ctx.body = response
+        next()
+    })
+})
+
+restRouter.post('/api/createTask', (ctx, next) => {
+    return new Promise (resolve => {
+        task.send('create', ctx.request.body, response => resolve(response))
+    })
+    .then(response => {
         ctx.body = response
         next()
     })

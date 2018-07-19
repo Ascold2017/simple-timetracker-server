@@ -17,8 +17,8 @@ App.use(bodyParser())
 App.use(router.routes())
 App.use(router.allowedMethods());
 
-  App.use(function (ctx) {
-	if(ctx.status === 404) {
+App.use(function (ctx) {
+	if (ctx.status === 404) {
 		ctx.body = {
 			status: false,
 			error: true,

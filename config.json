@@ -3,10 +3,10 @@
 		"rest": {
 			"name": "rest",
 			"connections": [
-                "auth@localhost:9704",
-                "user@localhost:9702",
-                "company@localhost:9701",
-                "task@localhost:9703",
+				"company@localhost:9701",
+				"user@localhost:9702",
+				"task@localhost:9703",
+				"auth@localhost:9704",
                 "timetracker@localhost:9705"
 			],
 			"server": {

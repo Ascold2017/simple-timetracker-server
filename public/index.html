@@ -13,10 +13,11 @@
 <body>
   <div id="app">
     <v-app>
-      <v-container>
+      <v-container grid-list-md>
         <v-layout row>
           <v-flex xs4>
             <v-card>
+              <v-subheader>Create company</v-subheader>
               <form @submit.prevent="createCompany()">
                 <v-card-text>
                   <v-text-field placeholder="Company name" v-model="company.title"></v-text-field>
@@ -32,6 +33,7 @@
 
           <v-flex xs4>
             <v-card>
+              <v-subheader>Create new user</v-subheader>
               <form @submit.prevent="createUser()">
                 <v-card-text>
                   <v-select
@@ -59,6 +61,7 @@
 
           <v-flex xs4>
             <v-card>
+              <v-subheader>Create new task</v-subheader>
               <form @submit.prevent="createTask()">
                 <v-card-text>
                   <v-select
@@ -78,25 +81,31 @@
         </v-layout>
         <v-layout row>
           <v-flex xs4>
-            <v-list>
+            <v-subheader>Companies (click for select)</v-subheader>
+            <v-list v-if='companies.length'>
               <v-list-tile
                 v-for="company in companies"
                 :key="company._id"
                 @click="selectCompany(company._id)">{{ company.name }}</v-list-tile>
             </v-list>
+            <v-alert v-else :value="true">Empty</v-alert>
           </v-flex>
           <v-flex xs4>
-            <v-list>
+            <v-subheader>Users in selected company</v-subheader>
+            <v-list v-if="users.length">
               <v-list-tile v-for="user in users" :key="user._id" >
                 {{ user.username }} - 
                 {{ userRole(user.type) }}
               </v-list-tile>
             </v-list>
+            <v-alert v-else :value="true">Empty</v-alert>
           </v-flex>
           <v-flex xs4>
-            <v-list>
+            <v-subheader>Tasks in selected company</v-subheader>
+            <v-list v-if="tasks.length">
               <v-list-tile v-for="task in tasks" :key="task._id" >{{ task.name }}</v-list-tile>
             </v-list>
+            <v-alert v-else :value="true">Empty</v-alert>
           </v-flex>
         </v-layout>
         

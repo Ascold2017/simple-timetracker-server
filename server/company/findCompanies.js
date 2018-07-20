@@ -5,5 +5,5 @@ module.exports = response => {
     
     Company.find()
     .then(companies => response.reply({ status: 200, result: companies }))
-    .then(e => response.reply({ status: 400, result: e.message || e })) 
+    .then(e => response.reply({ status: 400, result: e && e.message || e })) 
 }

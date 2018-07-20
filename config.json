@@ -1,0 +1,6 @@
+{
+    "mongodb": {
+		"link": "mongodb://ascold2018:ascold2018@ds143971.mlab.com:43971/simple-timetracker-server"
+    },
+    "port": 3000
+}

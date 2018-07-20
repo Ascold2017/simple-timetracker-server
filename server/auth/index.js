@@ -1,10 +1,8 @@
-const userEmitter = global.GLOBAL_EVENTS.userEmitter
-const authEmitter = global.GLOBAL_EVENTS.authEmitter
-const express = require('express')
+const appEmitter = global.GLOBAL_EVENTS.appEmitter
+const authEmitter = appEmitter.get('auth')
 
-authEmitter.on('register', (ctx) => {
-    console.log('Register', ctx.req.body)
-    let body = ctx.req.body
-    body.password = 'sm password'
-    userEmitter.emit('create', ctx)
-})
+const login = require('./login')
+const register = require('./register')
+
+authEmitter.on('register', register)
+authEmitter.on('login', login)

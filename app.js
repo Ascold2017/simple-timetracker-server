@@ -1,11 +1,15 @@
-const EventEmitter = require('events').EventEmitter
+const config = require('./config')
+const ee = require('@nauma/eventemitter')
 // global events
-global.GLOBAL_EVENTS = {}
-global.GLOBAL_EVENTS.authEmitter = new EventEmitter()
-global.GLOBAL_EVENTS.companyEmitter = new EventEmitter()
-global.GLOBAL_EVENTS.userEmitter = new EventEmitter()
-global.GLOBAL_EVENTS.taskEmitter = new EventEmitter()
-global.GLOBAL_EVENTS.timetrackerEmitter = new EventEmitter()
+const appEmitter = new ee.GroupEventEmitters()
+
+appEmitter.add( new ee.EventEmitter('auth'))
+appEmitter.add(new ee.EventEmitter('company'))
+appEmitter.add(new ee.EventEmitter('user'))
+appEmitter.add(new ee.EventEmitter('task'))
+appEmitter.add(new ee.EventEmitter('timetracker'))
+
+global.GLOBAL_EVENTS = { appEmitter }
 
 // base includes
 const express = require('express')
@@ -28,12 +32,18 @@ app.use('/api', api)
 
 // services
 require('./database')
+
 require('./server/auth')
 require('./server/company')
 require('./server/user')
 require('./server/task')
-require('./server/timetracker')
+// require('./server/timetracker')
+
+
+
+
 // start
-server.listen(2018)
+server.listen(config.port)
+
 
 

@@ -4,11 +4,13 @@
   "description": "��#\u0000 \u0000s\u0000i\u0000m\u0000p\u0000l\u0000e\u0000-\u0000t\u0000i\u0000m\u0000e\u0000t\u0000r\u0000a\u0000c\u0000k\u0000e\u0000r\u0000-\u0000s\u0000e\u0000r\u0000v\u0000e\u0000r\u0000\r\u0000 \u0000",
   "main": "app.js",
   "dependencies": {
+    "@nauma/eventemitter": "^1.0.5",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "mongoose": "^5.2.4",
-    "socket.io": "^2.1.1"
+    "socket.io": "^2.1.1",
+    "ws": "^5.2.2"
   },
   "devDependencies": {},
   "scripts": {

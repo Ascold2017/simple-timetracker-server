@@ -1,7 +1,8 @@
+const config = require('../config.json')
 const mongoose = require('mongoose')
 
-mongoose.connect('mongodb://ascold2018:ascold2018@ds237120.mlab.com:37120/simple-timetracker-server')
-
+mongoose.connect(config.mongodb.link)
+mongoose.Promise = Promise
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'))
 db.once('open', function() {

@@ -3,6 +3,11 @@ const name = 'User'
 const mongoose = require('mongoose')
 
 let schema = mongoose.Schema({
+	company_id: {
+		type: String,
+		required: true
+	},
+	
 	username: {
 		type: String,
 		required: true
@@ -21,7 +26,10 @@ let schema = mongoose.Schema({
         trim: true,
 	},
 
-	token: String
+	type: {
+		type: Number,
+		required: true
+	},
 })
 
 module.exports = {

@@ -8,12 +8,12 @@ module.exports = response => {
 
         const newTask = new Task({
             company_id: response.result.company_id,
-            username: response.result.name,
+            name: response.result.name,
         })
 
-        newTask.save()
+        return newTask.save()
             .then(() => response.reply({ message: 'Task successfully created!' }))
-            .catch(() => { throw new Error(e.message) })
+            .catch(e => { throw new Error(e.message) })
     })
     .catch(e => response.reply({ message: e.message }))
 }

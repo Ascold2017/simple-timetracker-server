@@ -5,20 +5,19 @@ const Company = require('../../database').Company
 
 module.exports = response => {
     Company.findById(response.result.company_id)
-    .then(company => {
-        if (!company) throw new Error('Company not exist!')
+    .then(() => {
 
         const newUser = new User({
             company_id: response.result.company_id,
             username: response.result.username,
             email: response.result.email,
-            password: '123',
+            password: response.result.password,
             type: response.result.type
         })
 
         return newUser.save()
             .then(() => response.reply({ message: 'User successfully created!' }))
-            .catch(e => { throw new Error(e.message) })
+            .catch(e => response.reply({ message: e.message }))
     })
     .catch(e => response.reply({ message: e.message }))
 }

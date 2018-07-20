@@ -7,3 +7,6 @@ const findByCompanyId = require('./findByCompanyId')
 user.get(config.microservices.rest.name)
     .on('create', createUser)
     .on('findByCompanyId', findByCompanyId)
+
+user.get('company')
+    .on('create', createUser)

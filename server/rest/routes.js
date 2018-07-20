@@ -50,4 +50,14 @@ restRouter.post('/api/createTask', (ctx, next) => {
     })
 })
 
+restRouter.post('/api/login', (ctx, next) => {
+    return new Promise (resolve => {
+        auth.send('login', ctx.request.body, response => resolve(response))
+    })
+    .then(response => {
+        ctx.body = response
+        next()
+    })
+})
+
 module.exports = restRouter

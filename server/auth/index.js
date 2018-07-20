@@ -6,4 +6,5 @@ const auth = new ms.Microservice(config.microservices.auth.name, config.microser
 
 const login = require('./login')
 
-auth.on('login', login)
+auth.get(config.microservices.rest.name)
+    .on('login', login)

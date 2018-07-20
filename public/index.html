@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Vuetify</title>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet" type="text/css">
+  <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet" type="text/css"></link>
+  <link href="styles.css" rel="stylesheet" type="text/css">
+  <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+</head>
+<body>
+  <div id="app">
+    <v-app>
+      <v-container>
+        <v-layout row>
+          <v-flex xs4>
+            <v-card>
+              <form @submit.prevent="createCompany()">
+                <v-card-text>
+                  <v-text-field placeholder="Company name" v-model="company.title"></v-text-field>
+                  <v-text-field placeholder="Admin username" v-model="company.adminName"></v-text-field>
+                  <v-text-field placeholder="Admin email" v-model="company.adminEmail"></v-text-field>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn type="submit">Create</v-btn>
+                </v-card-actions>
+                </form>
+            </v-card>
+          </v-flex>
+
+          <v-flex xs4>
+            <v-card>
+              <form @submit.prevent="createUser()">
+                <v-card-text>
+                  <v-select
+                    :items="companies"
+                    item-text="name"
+                    item-value="_id"
+                    v-model="user.company"
+                    label="User company"></v-select>
+                  <v-select
+                    :items="userRoles"
+                    item-text="name"
+                    item-value="id"
+                    v-model="user.role"
+                    label="User role"></v-select>
+                  <v-text-field placeholder="User name" v-model="user.username"></v-text-field>
+                  <v-text-field placeholder="User email" v-model="user.email"></v-text-field>
+                  <v-text-field placeholder="User password" v-model="user.password"></v-text-field>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn type="submit">Create</v-btn>
+                </v-card-actions>
+                </form>
+            </v-card>
+          </v-flex>
+
+          <v-flex xs4>
+            <v-card>
+              <form @submit.prevent="createTask()">
+                <v-card-text>
+                  <v-select
+                    :items="companies"
+                    item-text="name"
+                    item-value="_id"
+                    v-model="task.company"
+                    label="Task company"></v-select>
+                  <v-text-field placeholder="Task name" v-model="task.name"></v-text-field>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn type="submit">Create</v-btn>
+                </v-card-actions>
+                </form>
+            </v-card>
+          </v-flex>
+        </v-layout>
+        <v-layout row>
+          <v-flex xs4>
+            <v-list>
+              <v-list-tile
+                v-for="company in companies"
+                :key="company._id"
+                @click="selectCompany(company._id)">{{ company.name }}</v-list-tile>
+            </v-list>
+          </v-flex>
+          <v-flex xs4>
+            <v-list>
+              <v-list-tile v-for="user in users" :key="user._id" >
+                {{ user.username }} - 
+                {{ userRole(user.type) }}
+              </v-list-tile>
+            </v-list>
+          </v-flex>
+          <v-flex xs4>
+            <v-list>
+              <v-list-tile v-for="task in tasks" :key="task._id" >{{ task.name }}</v-list-tile>
+            </v-list>
+          </v-flex>
+        </v-layout>
+        
+      </v-container>
+     
+     
+      <v-footer :fixed="true" app>
+        <span>&copy; 2017</span>
+      </v-footer>
+    </v-app>
+  </div>
+
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      data: {
+        companies: [],
+        users: [],
+        tasks: [],
+        company: {
+          title: '',
+          adminEmail: '',
+          adminPassword: '',
+          adminName: ''
+        },
+        user: {
+          company: '',
+          email: '',
+          password: '',
+          role: null
+        },
+        task: {
+          company: null,
+          name: ''
+        },
+        error: ''
+      },
+
+      computed: {
+        userRoles () {
+          return [
+            { name: 'Admin', id: 2 },
+            { name: 'Moderator', id: 3 },
+            { name: 'Simple User', id: 4 },
+          ]
+        }
+      },
+
+      created () {
+        this.findCompanies()
+      },
+
+      methods: {
+        findCompanies () {
+          axios.get('/api/findCompanies')
+          .then(response => this.companies = response.data.result)
+          .catch(e => this.error = e.response.data.result)
+        },
+
+        findUsersInCompany(companyId) {
+          axios.get('/api/findUsersByCompany/' + companyId)
+            .then(response => {
+              this.users = response.data.result
+            })
+        },
+
+        findTasksInCompany(companyId) {
+          axios.get('/api/findTasksByCompany/' + companyId)
+            .then(response => {
+              this.tasks = response.data.result
+            })
+        },
+
+        createCompany () {
+          console.log('create')
+          axios.post('/api/createCompany', {
+            name: this.company.title,
+            email: this.company.adminEmail,
+            username: this.company.adminName
+          })
+          .then(response => {
+            alert(response.data.result)
+            this.findCompanies()
+          })
+        },
+
+        selectCompany (companyId) {
+          this.findUsersInCompany(companyId)
+          this.findTasksInCompany(companyId)
+        },
+
+        userRole (userType) {
+          switch(userType) {
+            case 1: return 'Superadmin'
+            case 2: return 'Admin'
+            case 3: return 'Moderator'
+            case 4: return 'Simple user'
+          }
+        },
+
+        createUser () {
+          axios.post('/api/createUser', {
+            company_id: this.user.company,
+            username: this.user.username,
+            type: this.user.role,
+            email: this.user.email,
+            password: this.user.password
+          })
+          .then(response => {
+              alert(response.data.result)
+              this.findCompanies()
+            })
+        },
+
+        createTask () {
+          axios.post('/api/createTask', {
+            company_id: this.task.company,
+            name: this.task.name
+          })
+          .then(response => {
+              alert(response.data.result)
+              this.findCompanies()
+            })
+        }
+      }
+
+    })
+  </script>
+</body>
+</html>

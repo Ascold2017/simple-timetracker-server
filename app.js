@@ -25,7 +25,7 @@ const api = require('./server/rest')
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(cors())
-app.use('/static', express.static(__dirname + '/public'))
+app.use(express.static(__dirname + '/public'))
 
 app.use('/api', api)
 // io.on('connection', )
@@ -39,7 +39,9 @@ require('./server/user')
 require('./server/task')
 // require('./server/timetracker')
 
-
+app.use('/', (req, res) => {
+    res.sendFile(__dirname + '/public/' + 'index.html')
+})
 
 
 // start

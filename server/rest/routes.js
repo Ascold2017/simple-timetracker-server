@@ -30,6 +30,16 @@ restRouter.post('/api/createUser', (ctx, next) => {
     })
 })
 
+restRouter.get('/api/getUsersByCompany/:id', (ctx, next) => {
+    return new Promise (resolve => {
+        user.send('findByCompanyId', ctx.params, response => resolve(response))
+    })
+    .then(response => {
+        ctx.body = response
+        next()
+    })
+})
+
 restRouter.post('/api/createTask', (ctx, next) => {
     return new Promise (resolve => {
         task.send('create', ctx.request.body, response => resolve(response))

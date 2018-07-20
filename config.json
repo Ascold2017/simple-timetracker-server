@@ -50,6 +50,6 @@
         }
 	},
 	"mongodb": {
-		"link": "mongodb://ascold2018:ascold2018@ds237120.mlab.com:37120/simple-timetracker-server"
+		"link": "mongodb://ascold2018:ascold2018@ds143971.mlab.com:43971/simple-timetracker-server"
 	}
 }

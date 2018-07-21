@@ -6,7 +6,8 @@ module.exports = response => {
     
     User.findById(response.data.company_id)
     .then(() => {
-        newUser.save((e, user) => {
+        newUser
+        .save((e, user) => {
             if (e) {
                 response.reply({ result: e.message, status: 400 })
                 return null

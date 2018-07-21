@@ -32,6 +32,14 @@ let schema = mongoose.Schema({
 	},
 })
 
+schema.methods.isValid = function () {
+	return new Promise((resolve, reject) => {
+		let valid = this.company_id
+		console.log(this)
+		resolve(this)
+	})
+}
+
 module.exports = {
 	[name]: mongoose.model(name, schema)
 }

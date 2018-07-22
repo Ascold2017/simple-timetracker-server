@@ -1,7 +1,6 @@
 const User = require('../../database').User
 
 module.exports = response => {
-    console.log('Find user')
     
     User.findOne(response.data)
     .then(user => {

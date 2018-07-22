@@ -48,4 +48,4 @@ app.use('/', (req, res) => {
 server.listen(config.port)
 
 
-
+module.exports = app

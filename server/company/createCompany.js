@@ -3,7 +3,7 @@ const db = require('../../database')
 const Company = db.Company
 
 module.exports = response => {
-    console.log('Create Company')
+   
     const data = response.data
 
     if (!data.name || !data.username || !data.email) {

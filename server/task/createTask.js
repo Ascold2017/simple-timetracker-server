@@ -2,7 +2,7 @@ const Company = require('../../database').Company
 const Task = require('../../database').Task
 
 module.exports = response => {
-    console.log('Create Task')
+
     const data = response.data
     if (!data.name || !data.company_id) {
         let result = ''

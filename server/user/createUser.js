@@ -3,11 +3,11 @@ const userEmitter = appEmitter.get('user')
 const companyEmitter = appEmitter.get('company')
 const User = require('../../database').User
 module.exports = response => {
-    console.log('Create User')
+
     userEmitter.emit('find', { email: response.data.email })
     .then(() => response.catch({ result: 'Такой пользователь уже есть', status: 400 }))
     .catch(() => {
-        companyEmitter.emit('find', { company_id: response.data.company_id })
+        companyEmitter.emit('find', { _id: response.data.company_id })
         .then(() => new User(response.data).save())
         .then(() =>  response.reply({ result: 'Пользователь успешно создан', status: 200 }))
         .catch(e => {

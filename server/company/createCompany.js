@@ -7,18 +7,14 @@ module.exports = response => {
     const data = response.data
 
     if (!data.name || !data.username || !data.email) {
-        response.reply({ status: 400, result: 'Не все поля заполнены' })
+        return response.catch({ status: 400, result: 'Не все поля заполнены' })
     }
 
     userEmitter.emit('find', { email: data.email })
-    .then(result => {
-        if (result) {
-            response.reply({ status: 400, result: 'Email already exist' })
-        } else {
-
-            new Company({
-                name: data.name
-            })
+    .then(() => response.catch({ status: 400, result: 'Почта уже занята' }))
+    .catch(() => {
+            // if admin email is free - we can create company
+            new Company({ name: data.name })
             .save()
             .then(createdCompany => {
                 return userEmitter.emit('create', {
@@ -29,28 +25,17 @@ module.exports = response => {
                     type: 2 // admin
                 })
             })
-            .then(userResponse => {
-                const hasError = userResponse.status === 200 ? false : true
-                let result = userResponse.status === 200 ? 'Company successfully created!' : 'Error'
-
-                if (userResponse.result.includes(data.email)) {
-                    result = 'Email is already used'
-                }
-
-                response.reply({
-                    status: hasError ? 400 : 200, 
-                    result
-                })
+            .then(() => {
+                response.reply({ status: 200, result: 'Company successfully created!' })
             })
-            .catch(err => {
+            .catch(e => {
                 let result = 'Ошибка!'
-                if(err.errmsg.includes(data.name)) {
-                    result = 'Компания с таким названием есть'
-                } else if (err.errmsg.includes(data.email)) {
-                    result = 'Почта уже занята'
+                if (e.errmsg) {
+                    if (e.errmsg.includes(data.name)) {
+                        result = 'Компания с таким названием есть'
+                    }
                 }
-                response.reply({ status: 400, result })
+                response.catch({ status: 400, result })
             })
-        }
-    })
+        })
 }

@@ -1,7 +1,11 @@
 const User = require('../../database').User
 
 module.exports = response => {
+    console.log('Find user')
+    
     User.findOne(response.data)
-    .then(user => response.reply(user))
-    .catch(e => response.reply(null))
+    .then(user => {
+        user ? response.reply(user) : response.catch({ status: 400, result: 'Такого пользователя нет!'})
+    })
+    .catch(e => response.catch({ status: 400, result: e }))
 }

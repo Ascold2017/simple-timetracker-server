@@ -14,10 +14,10 @@ module.exports = response => {
             if (validPassword(user.password, body.password)) {
                 response.reply({ status: 200, result: { token: 'fsdfsdfsdfsdf' } })
             } else {
-                response.reply({ status: 400, result: 'Password incorrect' })
+                response.catch({ status: 400, result: 'Password incorrect' })
             }
         } else {
-            response.reply({ status: 400, result: 'User not exist' })
+            response.catch({ status: 400, result: 'User not exist' })
         }
         
     })

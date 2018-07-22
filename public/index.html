@@ -173,6 +173,7 @@
             .then(response => {
               this.users = response.data.result
             })
+            .catch(e => alert(e.response.data.result))
         },
 
         findTasksInCompany(companyId) {
@@ -180,6 +181,7 @@
             .then(response => {
               this.tasks = response.data.result
             })
+            .catch(e => alert(e.response.data.result))
         },
 
         createCompany () {
@@ -193,6 +195,7 @@
             alert(response.data.result)
             this.findCompanies()
           })
+          .catch(e => alert(e.response.data.result))
         },
 
         selectCompany (companyId) {
@@ -210,7 +213,7 @@
         },
 
         createUser () {
-          axios.post('/api/createUser', {
+          axios.post('/api/register', {
             company_id: this.user.company,
             username: this.user.username,
             type: this.user.role,
@@ -221,6 +224,7 @@
               alert(response.data.result)
               this.findCompanies()
             })
+            .catch(e => alert(e.response.data.result))
         },
 
         createTask () {
@@ -232,6 +236,7 @@
               alert(response.data.result)
               this.findCompanies()
             })
+          .catch(e => alert(e.response.data.result))
         }
       }
 

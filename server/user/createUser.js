@@ -1,21 +1,17 @@
+const appEmitter = global.GLOBAL_EVENTS.appEmitter
+const userEmitter = appEmitter.get('user')
+const companyEmitter = appEmitter.get('company')
 const User = require('../../database').User
-const mongoose = require('mongoose')
 module.exports = response => {
     console.log('Create User')
-    const newUser = new User(response.data)
-    
-    User.findById(response.data.company_id)
-    .then(() => {
-        newUser
-        .save((e, user) => {
-            if (e) {
-                response.reply({ result: e.message, status: 400 })
-                return null
-            }
-            
-            response.reply({ result: 'User successfully created', status: 200 })
+    userEmitter.emit('find', { email: response.data.email })
+    .then(() => response.catch({ result: 'Такой пользователь уже есть', status: 400 }))
+    .catch(() => {
+        companyEmitter.emit('find', { company_id: response.data.company_id })
+        .then(() => new User(response.data).save())
+        .then(() =>  response.reply({ result: 'Пользователь успешно создан', status: 200 }))
+        .catch(e => {
+            response.catch({ result: e.message || e.result || e, status: 400 })
         })
     })
-    .catch(e => response.reply({ result: e.message, status: 400 }))
-   
 }

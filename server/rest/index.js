@@ -6,37 +6,52 @@ const taskEmitter = appEmitter.get('task')
 const authEmitter = appEmitter.get('auth')
 const timeTrackerEmitter = appEmitter.get('timetracker')
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocket.Server({ port: 8080 })
 
-
-const startTask = (ws, msg) => {
-    ws.send('Start task: ' + msg.taskId + ' by user: ' + msg.token);
-}
+let clients = []
 
 wss.on('connection', function connection(ws) {
-  ws.on('message', function incoming(message) {
-    const msg = JSON.parse(message)
-    console.log('received: ', msg);
-    switch(msg.type) {
-        case 'startTask': {
-            timeTrackerEmitter.emit('start', msg)
-                .then(response => ws.send(JSON.stringify(response)))
-                .catch(response => ws.send(JSON.stringify(response)))
-        }
-        break;
-        case 'stopTask': {
-            timeTrackerEmitter.emit('stop', msg)
-            .then(response => ws.send(JSON.stringify(response)))
-            .catch(response => ws.send(JSON.stringify(response)))
-        }
-        break;
-        default: ws.send('Unavailable send');
-        break;
-    }
-  })
+    let id = clients.length
 
-  ws.send('Connected');
-});
+    clients[id] = ws
+
+    console.log('connect')
+    clients[id].on('message', function incoming(message) {
+        const msg = JSON.parse(message)
+        console.log('received: ', msg)
+        switch(msg.type) {
+            case 'startTask': {
+                clients[id].userToken = msg.token
+                timeTrackerEmitter.emit('start', msg)
+                    .then(response => {
+                        clients[id].activeTaskId = response.result.task._id
+                        clients[id].send(JSON.stringify(response))
+                    })
+                    .catch(response => clients[id].send(JSON.stringify(response)))
+            }
+            break;
+            case 'stopTask': {
+                timeTrackerEmitter.emit('stop', msg)
+                .then(response => clients[id].send(JSON.stringify(response)))
+                .catch(response => clients[id].send(JSON.stringify(response)))
+            }
+            break;
+            default: clients[id].send('Unavailable send')
+            break;
+        }
+    })
+
+    clients[id].on('close', () => {
+        console.log('disconnect')
+        timeTrackerEmitter.emit('stop', {
+            taskId: clients[id].activeTaskId,
+            token: clients[id].userToken
+        })
+        delete clients[id]
+    })
+
+    ws.send('Connected')
+})
 
 
 router.post('/createCompany', ( req, res ) => {

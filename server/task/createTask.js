@@ -7,7 +7,7 @@ module.exports = response => {
     if (!data.name || !data.company_id) {
         let result = ''
         !data.name ? result = 'Название таска обязательно' : null
-        !data.company_id ? result = 'не выбрана компания' : null
+        !data.company_id ? result = 'Не выбрана компания' : null
         return response.catch({ status: 400, result })
     }
     

@@ -18,7 +18,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 
 const server = require('http').Server(app)
-const io = require('socket.io')(server, { path: '/websocket-api' })
+
 const api = require('./server/rest')
 
 // base settings
@@ -28,7 +28,6 @@ app.use(cors())
 app.use(express.static(__dirname + '/public'))
 
 app.use('/api', api)
-// io.on('connection', )
 
 // services
 require('./database')

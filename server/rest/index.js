@@ -5,44 +5,37 @@ const userEmitter = appEmitter.get('user')
 const taskEmitter = appEmitter.get('task')
 const authEmitter = appEmitter.get('auth')
 const timeTrackerEmitter = appEmitter.get('timetracker')
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8080 })
+
+const io = require('socket.io')(3001, { path: '/timetracker' })
 
 let clients = []
 
-wss.on('connection', function connection(ws) {
+io.on('connection', function (socket) {
+
     let id = clients.length
 
-    clients[id] = ws
+    clients[id] = socket.id
+    
+    socket.on('startTask', msg =>  {
 
-    console.log('connect')
-    clients[id].on('message', function incoming(message) {
-        const msg = JSON.parse(message)
-        console.log('received: ', msg)
-        switch(msg.type) {
-            case 'startTask': {
-                clients[id].userToken = msg.token
-                timeTrackerEmitter.emit('start', msg)
-                    .then(response => {
-                        clients[id].activeTaskId = response.result.task._id
-                        clients[id].send(JSON.stringify(response))
-                    })
-                    .catch(response => clients[id].send(JSON.stringify(response)))
-            }
-            break;
-            case 'stopTask': {
-                timeTrackerEmitter.emit('stop', msg)
-                .then(response => clients[id].send(JSON.stringify(response)))
-                .catch(response => clients[id].send(JSON.stringify(response)))
-            }
-            break;
-            default: clients[id].send('Unavailable send')
-            break;
-        }
+        clients[id].userToken = msg.token
+        timeTrackerEmitter.emit('start', msg)
+            .then(response => {
+                clients[id].activeTaskId = response.result.task._id
+                socket.emit('task-started', response)
+            })
+            .catch(response => socket.emit('error', response))
     })
 
-    clients[id].on('close', () => {
-        console.log('disconnect')
+    socket.on('stopTask', msg =>  {
+
+        timeTrackerEmitter.emit('stop', msg)
+            .then(response => socket.emit('task-stopped', response))
+            .catch(response => socket.emit('error', response))
+    })
+
+    socket.on('disconnect', () => {
+   
         timeTrackerEmitter.emit('stop', {
             taskId: clients[id].activeTaskId,
             token: clients[id].userToken
@@ -50,7 +43,6 @@ wss.on('connection', function connection(ws) {
         delete clients[id]
     })
 
-    ws.send('Connected')
 })
 
 
@@ -92,6 +84,12 @@ router.post('/login', (req, res) => {
 
 router.post('/register', (req, res) => {
     authEmitter.emit('register', req.body)
+        .then(response => res.status(200).json(response))
+        .catch(e => res.status(400).json(e))
+})
+
+router.get('/getTimetrackerStat/:userId', (req, res) => {
+    timeTrackerEmitter.emit('getStatForUser', req.params)
         .then(response => res.status(200).json(response))
         .catch(e => res.status(400).json(e))
 })

@@ -120,7 +120,7 @@
             <v-btn
               v-if="activeTask._id"
               @click.native="stopTask(activeTask._id)"
-              >{{ activeTask.name }}</v-btn>
+              >{{ activeTask.name }} {{ time }}</v-btn>
             <v-list v-if="tasks.length">
               <v-list-tile
               v-for="task in tasks"
@@ -144,6 +144,7 @@
   <script src="https://unpkg.com/vue/dist/vue.js"></script>
   <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
   <script>
     new Vue({
       el: '#app',
@@ -177,7 +178,9 @@
         activeTask: {
           _id: null,
           name: ''
-        }
+        },
+        timeIntrvl: null,
+        time: null
       },
 
       computed: {
@@ -195,52 +198,38 @@
       },
 
       mounted () {
-        let self = this
-        this.socket = new WebSocket('ws://localhost:8080')
-        this.socket.onopen = function() {
-          console.log("Соединение установлено.");
-        }
 
-        this.socket.onclose = function(event) {
-          if (event.wasClean) {
-            console.log('Соединение закрыто чисто');
-          } else {
-            console.log('Обрыв соединения'); // например, "убит" процесс сервера
-          }
-          console.log('Код: ' + event.code + ' причина: ' + event.reason);
-        }
+        this.socket = io('http://localhost:3001', { path: '/timetracker'})
+  
+        this.socket.on('connect', () => console.log("Соединение установлено."))
+        this.socket.on('close', (e) => { console.log('Disconnect', e) })
+        this.socket.on('task-started', (msg) => {
+          this.activeTask._id = msg.result.task._id,
+          this.activeTask.name = msg.result.task.name
+        })
+        this.socket.on('task-stopped', () => {
+          this.activeTask._id = null
+          this.activeTask.name = ''
+        })
 
-        this.socket.onmessage = function(event) {
-          const msg = JSON.parse(event.data)
-          console.log("Получены данные ", msg.result);
-          
-          switch (msg.type) {
-            case 'task-started': {
-              self.activeTask._id = msg.result.task._id,
-              self.activeTask.name = msg.result.task.name
-            }
-            break;
-            case 'task-stopped': {
-              self.activeTask._id = null
-              self.activeTask.name = ''
-            }
-            break;
-          }
-        }
+        this.socket.on('error', error => console.log("Ошибка " + error.message))
 
-        this.socket.onerror = function(error) {
-          console.log("Ошибка " + error.message);
-        }
       },
 
       methods: {
 
         startTask (taskId) {
-          this.socket.send(JSON.stringify({ type: 'startTask', taskId, token: this.token }))
+          this.time = 0
+          this.timeIntrvl = setInterval(() => { this.time++ }, 1000)
+          this.socket.emit('startTask', { taskId, token: this.token })
         },
 
         stopTask (taskId) {
-          this.socket.send(JSON.stringify({ type: 'stopTask', taskId, token: this.token }))
+          // this.time = 0
+          // 
+          clearInterval(this.timeIntrvl)
+          this.timeIntrvl = null
+          this.socket.emit('stopTask', { taskId, token: this.token })
         },
 
         loginUser () {
@@ -274,7 +263,6 @@
         },
 
         createCompany () {
-          console.log('create')
           axios.post('/api/createCompany', {
             name: this.company.title,
             email: this.company.adminEmail,
@@ -294,10 +282,10 @@
 
         userRole (userType) {
           switch(userType) {
-            case 1: return 'Superadmin'
-            case 2: return 'Admin'
-            case 3: return 'Moderator'
-            case 4: return 'Simple user'
+            case 0: return 'Superadmin'
+            case 1: return 'Admin'
+            case 2: return 'Moderator'
+            case 3: return 'Simple user'
           }
         },
 

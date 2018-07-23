@@ -18,9 +18,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app",
-    "test": "node ./spec/run.js"
+    "test": "node ./spec/run.js",
+    "start": "nodemon app"
   },
   "repository": {
     "type": "git",

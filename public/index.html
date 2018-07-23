@@ -14,6 +14,21 @@
   <div id="app">
     <v-app>
       <v-container grid-list-md>
+        <v-layout>
+          <v-flex>
+            <v-card>
+              <form @submit.prevent="loginUser()">
+                <v-card-text>
+                  <v-text-field placeholder="email" v-model="auth.email"></v-text-field>
+                  <v-text-field placeholder="password" v-model="auth.password"></v-text-field>
+                </v-card-text>
+                <v-card-actions>
+                  <v-btn type="submit">Submit</v-btn>
+                </v-card-actions>
+              </form>
+            </v-card>
+          </v-flex>
+        </v-layout>
         <v-layout row>
           <v-flex xs4>
             <v-card>
@@ -102,8 +117,16 @@
           </v-flex>
           <v-flex xs4>
             <v-subheader>Tasks in selected company</v-subheader>
+            <v-btn
+              v-if="activeTask._id"
+              @click.native="stopTask(activeTask._id)"
+              >{{ activeTask.name }}</v-btn>
             <v-list v-if="tasks.length">
-              <v-list-tile v-for="task in tasks" :key="task._id" >{{ task.name }}</v-list-tile>
+              <v-list-tile
+              v-for="task in tasks"
+              :key="task._id"
+              @click.native="startTask(task._id)"
+              >{{ task.name }}</v-list-tile>
             </v-list>
             <v-alert v-else :value="true">Empty</v-alert>
           </v-flex>
@@ -144,15 +167,25 @@
           company: null,
           name: ''
         },
-        error: ''
+        error: '',
+        socket: null,
+        token: null,
+        auth: {
+          email: '',
+          password: ''
+        },
+        activeTask: {
+          _id: null,
+          name: ''
+        }
       },
 
       computed: {
         userRoles () {
           return [
-            { name: 'Admin', id: 2 },
-            { name: 'Moderator', id: 3 },
-            { name: 'Simple User', id: 4 },
+            { name: 'Admin', id: 1 },
+            { name: 'Moderator', id: 2 },
+            { name: 'Simple User', id: 3 },
           ]
         }
       },
@@ -161,7 +194,63 @@
         this.findCompanies()
       },
 
+      mounted () {
+        let self = this
+        this.socket = new WebSocket('ws://localhost:8080')
+        this.socket.onopen = function() {
+          console.log("Соединение установлено.");
+        }
+
+        this.socket.onclose = function(event) {
+          if (event.wasClean) {
+            console.log('Соединение закрыто чисто');
+          } else {
+            console.log('Обрыв соединения'); // например, "убит" процесс сервера
+          }
+          console.log('Код: ' + event.code + ' причина: ' + event.reason);
+        }
+
+        this.socket.onmessage = function(event) {
+          const msg = JSON.parse(event.data)
+          console.log("Получены данные ", msg.result);
+          
+          switch (msg.type) {
+            case 'task-started': {
+              self.activeTask._id = msg.result.task._id,
+              self.activeTask.name = msg.result.task.name
+            }
+            break;
+            case 'task-stopped': {
+              self.activeTask._id = null
+              self.activeTask.name = ''
+            }
+            break;
+          }
+        }
+
+        this.socket.onerror = function(error) {
+          console.log("Ошибка " + error.message);
+        }
+      },
+
       methods: {
+
+        startTask (taskId) {
+          this.socket.send(JSON.stringify({ type: 'startTask', taskId, token: this.token }))
+        },
+
+        stopTask (taskId) {
+          this.socket.send(JSON.stringify({ type: 'stopTask', taskId, token: this.token }))
+        },
+
+        loginUser () {
+          axios.post('/api/login', this.auth)
+            .then(response => {
+              this.token = response.data.result.token
+            })
+            .catch(e => alert(e.response.data.result))
+        },
+
         findCompanies () {
           axios.get('/api/findCompanies')
           .then(response => this.companies = response.data.result)

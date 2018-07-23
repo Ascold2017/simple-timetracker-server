@@ -17,7 +17,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
 
-const server = require('http').Server(app);
+const server = require('http').Server(app)
 const io = require('socket.io')(server, { path: '/websocket-api' })
 const api = require('./server/rest')
 
@@ -37,15 +37,13 @@ require('./server/auth')
 require('./server/company')
 require('./server/user')
 require('./server/task')
-// require('./server/timetracker')
+require('./server/timetracker')
 
 app.use('/', (req, res) => {
     res.sendFile(__dirname + '/public/' + 'index.html')
 })
 
-
 // start
 server.listen(config.port)
-
 
 module.exports = app

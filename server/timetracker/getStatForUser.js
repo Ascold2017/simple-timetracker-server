@@ -11,36 +11,56 @@ const _ = require('lodash')
 
 module.exports = response => {
     const data = response.data
-
+    console.log(data)
     if (!data.userId) {
         return response.catch({ status: 400, result: 'Пользователь не указан' })
     }
 
+    if (!data.from) {
+        data.from = new Date(0)
+    }
+
+    if (!data.to) {
+        data.to = Date.now()
+    }
+
+    
+
     TimeTracker
-        .find({ user_id: data.userId })
+        .find({
+            user_id: data.userId,
+            date_end: { $exists: true, $lte: data.to },
+            date_start: { $gte: data.from }
+        })
         .sort({ date_start: 1 })
         .then(tracks => {
+            let taskIds = []
+            // collect unique task ids
+            tracks.map(track => {
+                if (!taskIds.includes(track.task_id)) {
+                    taskIds.push(track.task_id)
+                }
+            })
 
-            // TODO
-            // 1. собрать task_id всех треков
-            // 2. запросить таски по айдишникам
-            // 3. сгруппировать таски к такому виду:
-            /* [
-                    {
-                        name: 'Some task',
-                        tracks: [
-                            {
-                                date_start: ....,
-                                date_end: ....
-                            }
-                        ]
-                    }
+            let promises = taskIds.map(taskId =>  taskEmitter.emit('find', { _id: taskId }))
 
-                ]
-            */
-
-            
-            response.reply(tracks)
+            Promise.all(promises)
+            .then(tasks => {
+                return tasks.map(task => ({
+                    name: task.name,
+                    tracks: tracks.filter(track => {
+                        console.log(typeof track.task_id, typeof task._id) // what === is false ????
+                        return track.task_id == task._id
+                    })
+                    .map(track => ({
+                        name: track.name,
+                        start: track.date_start,
+                        end: track.date_end
+                    }))
+                }))
+            })
+            .then(result => response.reply({ status: 200, result }))
+      
         })
         .catch(e => response.catch({ status: 400, result: e.message }))
 }

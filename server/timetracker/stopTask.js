@@ -12,14 +12,14 @@ module.exports = response => {
 
     const data = response.data
 
-    if (!data.token) {
+    if (!data.userId) {
         return response.catch({ status: 400, result: 'Пользователь не указан' })
     }
     if (!data.taskId) {
         return response.catch({ status: 400, result: 'Таск не указан' })
     }
 
-    userEmitter.emit('find', { _id: data.token })
+    userEmitter.emit('find', { _id: data.userId })
     .then(() => {
         return TimeTracker.findByIdAndUpdate(data.taskId, {
             date_end: Date.now()

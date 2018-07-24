@@ -22,7 +22,7 @@ module.exports = response => {
                     username: data.username,
                     email: data.email,
                     password: '123',
-                    type: 2 // admin
+                    type: 1 // admin
                 })
             })
             .then(() => {

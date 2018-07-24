@@ -12,7 +12,7 @@ module.exports = response => {
 
     const data = response.data
 
-    if (!data.token) {
+    if (!data.userId) {
         return response.catch({ status: 400, result: 'Пользователь не указан' })
     }
     if (!data.taskId) {
@@ -21,14 +21,14 @@ module.exports = response => {
 
     let taskName = ''
 
-    userEmitter.emit('find', { _id: data.token })
+    userEmitter.emit('find', { _id: data.userId })
     .then(user => companyEmitter.emit('find', { _id: user.company_id }))
     .then(() => taskEmitter.emit('find', { _id: data.taskId }))
     .then(task => {
         taskName = task.name
         return new TimeTracker({
             task_id: data.taskId,
-            user_id: data.token,
+            user_id: data.userId,
             date_start: Date.now()
         })
         .save()

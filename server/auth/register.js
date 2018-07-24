@@ -4,7 +4,7 @@ const userEmitter = appEmitter.get('user')
 module.exports = response => {
 
     let data = response.data
-    let fillField = data.username && data.email && data.password
+    let fillField = data.username && data.email
     if (!fillField) {
         return response.catch({ status: 400, result: 'Не все поля заполнены!' })
     }

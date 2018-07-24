@@ -11,7 +11,7 @@ const _ = require('lodash')
 
 module.exports = response => {
     const data = response.data
-    console.log(data)
+
     if (!data.userId) {
         return response.catch({ status: 400, result: 'Пользователь не указан' })
     }
@@ -23,9 +23,7 @@ module.exports = response => {
     if (!data.to) {
         data.to = Date.now()
     }
-
     
-
     TimeTracker
         .find({
             user_id: data.userId,
@@ -42,22 +40,30 @@ module.exports = response => {
                 }
             })
 
-            let promises = taskIds.map(taskId =>  taskEmitter.emit('find', { _id: taskId }))
+            let promises = taskIds.map(taskId => taskEmitter.emit('find', { _id: taskId }))
 
             Promise.all(promises)
             .then(tasks => {
-                return tasks.map(task => ({
-                    name: task.name,
-                    tracks: tracks.filter(track => {
-                        console.log(typeof track.task_id, typeof task._id) // what === is false ????
-                        return track.task_id == task._id
-                    })
-                    .map(track => ({
-                        name: track.name,
-                        start: track.date_start,
-                        end: track.date_end
-                    }))
-                }))
+                return tasks.map(task => {
+
+                    let taskTracks = tracks
+                        .filter(track => track.task_id == task._id)
+                        .map(track => ({
+                            name: track.name,
+                            start: track.date_start,
+                            end: track.date_end
+                        }))
+                    
+                    let total = taskTracks.reduce((prev, next) => {
+                        return prev + ((+new Date(next.end)) - (+new Date(next.start)))
+                    }, 0)
+            
+                    return {
+                        name: task.name,
+                        total: Math.round(total / 1000),
+                        tracks: taskTracks
+                    }
+                })
             })
             .then(result => response.reply({ status: 200, result }))
       

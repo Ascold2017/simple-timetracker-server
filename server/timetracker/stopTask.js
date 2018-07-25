@@ -20,11 +20,7 @@ module.exports = response => {
     }
 
     userEmitter.emit('find', { _id: data.userId })
-    .then(() => {
-        return TimeTracker.findByIdAndUpdate(data.taskId, {
-            date_end: Date.now()
-        })
-    })
-    .then(() => response.reply({ type: 'task-stopped', result: 'Таск успешно остановлен' }))
+    .then(() => TimeTracker.findByIdAndUpdate(data.taskId, { date_end: new Date() }))
+    .then(() =>  response.reply({ type: 'task_stopped', result: 'Таск успешно остановлен' }))
     .catch(e => response.catch(e))
 }

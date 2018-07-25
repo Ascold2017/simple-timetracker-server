@@ -30,14 +30,12 @@ let schema = mongoose.Schema({
 		type: Number,
 		required: true
 	},
-})
 
-schema.methods.isValid = function () {
-	return new Promise((resolve, reject) => {
-		let valid = this.company_id
-		resolve(this)
-	})
-}
+	createdAt: {
+		type: Date,
+		required: true
+	}
+})
 
 module.exports = {
 	[name]: mongoose.model(name, schema)

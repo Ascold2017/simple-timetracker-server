@@ -8,7 +8,7 @@ module.exports = response => {
     .then(() => response.catch({ result: 'Такой пользователь уже есть', status: 400 }))
     .catch(() => {
         companyEmitter.emit('find', { _id: response.data.company_id })
-        .then(() => new User(response.data).save())
+        .then(() => new User({ ...response.data, createdAt: new Date() }).save())
         .then(() =>  response.reply({ result: 'Пользователь успешно создан', status: 200 }))
         .catch(e => {
             response.catch({ result: e.message || e.result || e, status: 400 })

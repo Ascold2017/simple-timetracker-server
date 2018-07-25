@@ -7,7 +7,6 @@ const Company = db.Company
 const User = db.user
 const Task = db.Task
 const TimeTracker = db.Timetracker
-const _ = require('lodash')
 
 module.exports = response => {
     const data = response.data
@@ -16,22 +15,34 @@ module.exports = response => {
         return response.catch({ status: 400, result: 'Пользователь не указан' })
     }
 
-    if (!data.from) {
-        data.from = new Date(0)
+    if (!data.to) {
+        
+        data.to = new Date()
     }
 
-    if (!data.to) {
-        data.to = Date.now()
+    if (!data.from) {
+        userEmitter.emit('find', { _id: data.userId })
+        .then(user => {
+            data.from = user.createdAt
+            exec()
+        })
+    } else {
+        exec()
     }
-    
-    TimeTracker
+
+
+    // main method
+    const exec = () => {
+
+        TimeTracker
         .find({
             user_id: data.userId,
-            date_end: { $exists: true, $lte: data.to },
-            date_start: { $gte: data.from }
+            date_start: { $lt: data.to },
+            date_end: { $lt: data.to, $gte: data.from}
         })
         .sort({ date_start: 1 })
         .then(tracks => {
+
             let taskIds = []
             // collect unique task ids
             tracks.map(track => {
@@ -69,4 +80,5 @@ module.exports = response => {
       
         })
         .catch(e => response.catch({ status: 400, result: e.message }))
+    }
 }

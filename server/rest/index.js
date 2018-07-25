@@ -31,7 +31,7 @@ io.on('connection', function (socket) {
 
     let id = clients.length
 
-    clients[id] = socket.id
+    clients[id] =  {}
    
     socket.on('startTask', msg =>  {
 
@@ -44,6 +44,12 @@ io.on('connection', function (socket) {
 
             clients[id].userToken = token.userId
 
+            if (clients[id].activeTaskId) {
+                timeTrackerEmitter.emit('stop', { taskId: clients[id].activeTaskId, userId: clients[id].userToken })
+                    .then(response => socket.emit('task_stopped', response))
+                    .catch(response => socket.emit('error_message', response))
+            }
+
             timeTrackerEmitter.emit('start', { taskId: msg.taskId, userId: token.userId, company_id: token.company_id })
                 .then(response => {
                     clients[id].activeTaskId = response.result.task._id
@@ -55,12 +61,13 @@ io.on('connection', function (socket) {
     })
 
     socket.on('stopTask', msg =>  {
+
+        console.log('stop task')
         if (!msg.token) {
             socket.emit('error_message', { message: 'No token!' })
         } else {
-            const token = jwt.decode(msg.token, config.tokenKey)
-            timeTrackerEmitter.emit('stop', { taskId: msg.taskId, userId: token.userId })
-                .then(response => socket.emit('task-stopped', response))
+            timeTrackerEmitter.emit('stop', { taskId: clients[id].activeTaskId, userId: clients[id].userToken })
+                .then(response => socket.emit('task_stopped', response))
                 .catch(response => socket.emit('error_message', response))
         }
     })
@@ -70,7 +77,7 @@ io.on('connection', function (socket) {
         if (clients[id].activeTaskId && clients[id].userToken) {
             timeTrackerEmitter.emit('stop', {
                 taskId: clients[id].activeTaskId,
-                token: clients[id].userToken
+                userId: clients[id].userToken
             })
         }
        
@@ -80,7 +87,7 @@ io.on('connection', function (socket) {
 })
 
 
-router.post('/createCompany', isAuth, ( req, res ) => {
+router.post('/createCompany', ( req, res ) => {
     companyEmitter.emit('create', req.body)
         .then(response => res.status(200).json(response))
         .catch(e => res.status(400).json(e))
@@ -148,10 +155,21 @@ router.post('/register', isAuth, (req, res) => {
         .catch(e => res.status(400).json(e))
 })
 
+router.get('/getTimetrackerStat', isAuth, (req, res) => {
+
+    const token = jwt.decode(req.headers.token, config.tokenKey)
+
+    timeTrackerEmitter.emit('getStatForUser', token)
+        .then(response => res.status(200).json(response))
+        .catch(e => res.status(400).json(e))
+})
+
 router.get('/getTimetrackerStat/:userId', isAuth, (req, res) => {
     timeTrackerEmitter.emit('getStatForUser', req.params)
         .then(response => res.status(200).json(response))
         .catch(e => res.status(400).json(e))
 })
+
+
 
 module.exports = router

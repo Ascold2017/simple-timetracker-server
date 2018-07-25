@@ -22,6 +22,13 @@ describe('Test company', () => {
         Promise.all(prms).then(() => done())
     })
 
+    afterAll(done => {
+        let prms = []
+        prms.push(db.Company.remove({}))
+        prms.push(db.User.remove({}))
+        Promise.all(prms).then(() => done())
+    })
+
     describe('Post /api/createCompany', () => {
         it('valid send', (done) => {
             chai

@@ -19,6 +19,13 @@ describe('Test auth', () => {
         Promise.all(prms).then(() => done())
     })
 
+    afterAll(done => {
+        let prms = []
+        prms.push(db.Company.remove({}))
+        prms.push(db.User.remove({}))
+        Promise.all(prms).then(() => done())
+    })
+
     describe('Test POST /api/register', () => {
         it('valid form', done => {
             let id = null

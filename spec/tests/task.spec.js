@@ -19,6 +19,13 @@ describe('Test task', () => {
         Promise.all(prms).then(() => done())
     })
 
+    afterAll(done => {
+        let prms = []
+        prms.push(db.Company.remove({}))
+        prms.push(db.Task.remove({}))
+        Promise.all(prms).then(() => done())
+    })
+
     describe('Test POST /api/createTask', () => {
         it('valid form', done => {
             let id = null

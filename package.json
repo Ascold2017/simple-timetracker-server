@@ -16,6 +16,7 @@
     "mongoose": "^5.2.4",
     "mongoose-beautiful-unique-validation": "^7.1.1",
     "socket.io": "^2.1.1",
+    "socket.io-client": "^2.1.1",
     "ws": "^5.2.2"
   },
   "devDependencies": {},

@@ -4,7 +4,7 @@ const companyEmitter = appEmitter.get('company')
 const taskEmitter = appEmitter.get('task')
 const db = require('../../database')
 const Company = db.Company
-const User = db.user
+const User = db.User
 const Task = db.Task
 const TimeTracker = db.Timetracker
 

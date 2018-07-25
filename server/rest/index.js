@@ -119,8 +119,6 @@ router.post('/createTask', isAuth, (req, res) => {
 
     const token = jwt.decode(req.headers.token, config.tokenKey)
 
-    console.log(token)
-
     taskEmitter.emit('create', { ...req.body, company_id: token.company_id })
         .then(response => res.status(200).json(response))
         .catch(e => res.status(400).json(e))

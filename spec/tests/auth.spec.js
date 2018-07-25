@@ -7,6 +7,9 @@ chai.use(chaiHttp)
 
 const db = require('../../database')
 
+const jwt = require('jwt-simple')
+const config = require('../../config.json')
+
 describe('Test auth', () => {
 
     beforeEach(done => {
@@ -27,6 +30,7 @@ describe('Test auth', () => {
                 chai
                 .request(app)
                 .post('/api/register')
+                .set('token', jwt.encode({ company_id: id }, config.tokenKey))
                 .send({
                     company_id: id,
                     username: 'Test username',
@@ -56,6 +60,7 @@ describe('Test auth', () => {
                 chai
                 .request(app)
                 .post('/api/register')
+                .set('token', jwt.encode({ company_id: id }, config.tokenKey))
                 .send({
                     company_id: id,
                     username: 'Test username',
@@ -78,6 +83,7 @@ describe('Test auth', () => {
             chai
             .request(app)
             .post('/api/register')
+            .set('token', jwt.encode({ company_id: null }, config.tokenKey))
             .send({
                 company_id: null,
                 username: 'Test username',
@@ -100,6 +106,7 @@ describe('Test auth', () => {
             chai
             .request(app)
             .post('/api/register')
+            .set('token', jwt.encode({ company_id: null }, config.tokenKey))
             .send({
                 company_id: null,
                 username: null,
@@ -128,7 +135,8 @@ describe('Test auth', () => {
                     username: 'Test username',
                     email: 'test@mail.ru', // unique email
                     password: '123',
-                    type: 3
+                    type: 3,
+                    createdAt: new Date()
                 })
                 .save()
             })
@@ -136,6 +144,7 @@ describe('Test auth', () => {
                 chai
                 .request(app)
                 .post('/api/register')
+                .set('token', jwt.encode({ company_id: id }, config.tokenKey))
                 .send({
                     company_id: id,
                     username: 'Test username',
@@ -163,6 +172,7 @@ describe('Test auth', () => {
                 chai
                 .request(app)
                 .post('/api/register')
+                .set('token', jwt.encode({ company_id: id }, config.tokenKey))
                 .send({
                     company_id: id,
                     username: 'Test username',

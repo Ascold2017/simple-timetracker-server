@@ -7,7 +7,13 @@ chai.use(chaiHttp)
 
 const db = require('../../database')
 
+const jwt = require('jwt-simple')
+const config = require('../../config.json')
+const jasmine = require('../run')
+
 describe('Test company', () => {
+
+    let originalInterval
 
     beforeEach(done => {
         let prms = []
@@ -21,6 +27,7 @@ describe('Test company', () => {
             chai
             .request(app)
             .post('/api/createCompany')
+            .set('token', jwt.encode({ }, config.tokenKey))
             .send({
                 name: 'Test name', // unique name
                 username: 'Test username',
@@ -45,7 +52,8 @@ describe('Test company', () => {
                 email: 'test13@mail.ru',
                 type: 2,
                 password: '123',
-                company_id: company._id
+                company_id: company._id,
+                createdAt: new Date()
     
             })
             .save())
@@ -79,7 +87,8 @@ describe('Test company', () => {
                 email: 'test14@mail.ru',
                 type: 2,
                 password: '123',
-                company_id: company._id
+                company_id: company._id,
+                createdAt: new Date()
     
             })
             .save())
@@ -132,6 +141,7 @@ describe('Test company', () => {
                 chai
                 .request(app)
                 .get('/api/findCompanies')
+                .set('token', jwt.encode({ }, config.tokenKey))
                 .end((err, res) => {
                     expect(err).toBe(null)
                     res.should.have.status(200)

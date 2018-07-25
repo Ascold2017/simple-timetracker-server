@@ -29,7 +29,6 @@ module.exports = response => {
                 response.reply({ status: 200, result: 'Company successfully created!' })
             })
             .catch(e => {
-                console.log(e)
                 let result = 'Ошибка!'
                 if (e.errmsg) {
                     if (e.errmsg.includes(data.name)) {

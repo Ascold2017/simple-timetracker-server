@@ -7,6 +7,9 @@ chai.use(chaiHttp)
 
 const db = require('../../database')
 
+const jwt = require('jwt-simple')
+const config = require('../../config.json')
+
 describe('Test task', () => {
 
     beforeEach(done => {
@@ -27,10 +30,8 @@ describe('Test task', () => {
                 chai
                 .request(app)
                 .post('/api/createTask')
-                .send({
-                    company_id: id,
-                    name: 'Test task'
-                })
+                .set('token', jwt.encode({ company_id: id }, config.tokenKey))
+                .send({ name: 'Test task' })
                 .end((err, res) => {
                     expect(err).toBe(null)
                     res.should.have.status(200)
@@ -58,6 +59,7 @@ describe('Test task', () => {
                 chai
                 .request(app)
                 .post('/api/createTask')
+                .set('token', jwt.encode({ company_id: id }, config.tokenKey))
                 .send({
                     company_id: id,
                     name: 'Test task 1'
@@ -76,6 +78,7 @@ describe('Test task', () => {
             let id = null
             new db.Company({ name: 'Test 1.9' })
             .save()
+            
             .then(company => {
                 id = company._id
                 return new db.Task({
@@ -93,10 +96,8 @@ describe('Test task', () => {
                 chai
                 .request(app)
                 .post('/api/createTask')
-                .send({
-                    company_id: id,
-                    name: 'Test task 1'
-                })
+                .set('token', jwt.encode({ company_id: id }, config.tokenKey))
+                .send({ name: 'Test task 1' })
                 .end((err, res) => {
                     expect(err).toBe(null)
                     res.should.have.status(200)
@@ -112,6 +113,7 @@ describe('Test task', () => {
             chai
             .request(app)
             .post('/api/createTask')
+            .set('token', jwt.encode({ }, config.tokenKey))
             .send({
                 company_id: null,
                 name: 'Test task'
@@ -135,10 +137,8 @@ describe('Test task', () => {
                 chai
                 .request(app)
                 .post('/api/createTask')
-                .send({
-                    company_id: id,
-                    name: null
-                })
+                .set('token', jwt.encode({ company_id: id }, config.tokenKey))
+                .send({ name: null })
                 .end((err, res) => {
                     expect(err).toBe(null)
                     res.should.have.status(400)

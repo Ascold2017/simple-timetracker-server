@@ -12,7 +12,7 @@ module.exports = response => {
     const data = response.data
 
     if (!data.userId) {
-        return response.catch({ status: 400, result: 'Пользователь не указан' })
+        return response.replyErr({ status: 400, result: 'Пользователь не указан' })
     }
 
     if (!data.to) {
@@ -79,6 +79,6 @@ module.exports = response => {
             .then(result => response.reply({ status: 200, result }))
       
         })
-        .catch(e => response.catch({ status: 400, result: e.message }))
+        .catch(e => response.replyErr({ status: 400, result: e.message }))
     }
 }

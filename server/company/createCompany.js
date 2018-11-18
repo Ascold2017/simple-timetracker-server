@@ -7,11 +7,11 @@ module.exports = response => {
     const data = response.data
 
     if (!data.name || !data.username || !data.email) {
-        return response.catch({ status: 400, result: 'Не все поля заполнены' })
+        return response.replyErr({ status: 400, result: 'Не все поля заполнены' })
     }
 
     userEmitter.emit('find', { email: data.email })
-    .then(() => response.catch({ status: 400, result: 'Почта уже занята' }))
+    .then(() => response.replyErr({ status: 400, result: 'Почта уже занята' }))
     .catch(() => {
             // if admin email is free - we can create company
             new Company({ name: data.name })
@@ -35,7 +35,7 @@ module.exports = response => {
                         result = 'Компания с таким названием есть'
                     }
                 }
-                response.catch({ status: 400, result })
+                response.replyErr({ status: 400, result })
             })
         })
 }

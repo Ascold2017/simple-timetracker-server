@@ -13,14 +13,14 @@ module.exports = response => {
     const data = response.data
 
     if (!data.userId) {
-        return response.catch({ status: 400, result: 'Пользователь не указан' })
+        return response.replyErr({ status: 400, result: 'Пользователь не указан' })
     }
     if (!data.taskId) {
-        return response.catch({ status: 400, result: 'Таск не указан' })
+        return response.replyErr({ status: 400, result: 'Таск не указан' })
     }
 
     userEmitter.emit('find', { _id: data.userId })
     .then(() => TimeTracker.findByIdAndUpdate(data.taskId, { date_end: new Date() }))
     .then(() =>  response.reply({ type: 'task_stopped', result: 'Таск успешно остановлен' }))
-    .catch(e => response.catch(e))
+    .catch(e => response.replyErr(e))
 }

@@ -12,7 +12,7 @@ module.exports = response => {
     console.log('Login')
     let body = response.data
     if (!body.email || !body.password) {
-        return response.catch({ status: 400, result: 'Поля не заполнены!' })
+        return response.replyErr({ status: 400, result: 'Поля не заполнены!' })
     }
     userEmitter.emit('find', { email: body.email })
     .then(user => {
@@ -43,11 +43,11 @@ module.exports = response => {
                 })
 
             } else {
-                response.catch({ status: 400, result: 'Password incorrect' })
+                response.replyErr({ status: 400, result: 'Password incorrect' })
             }
         } else {
-            response.catch({ status: 400, result: 'User not exist' })
+            response.replyErr({ status: 400, result: 'User not exist' })
         }
     })
-    .catch(e => response.catch(e))
+    .catch(e => response.replyErr(e))
 }

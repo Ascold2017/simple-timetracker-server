@@ -4,7 +4,7 @@
   "description": "��#\u0000 \u0000s\u0000i\u0000m\u0000p\u0000l\u0000e\u0000-\u0000t\u0000i\u0000m\u0000e\u0000t\u0000r\u0000a\u0000c\u0000k\u0000e\u0000r\u0000-\u0000s\u0000e\u0000r\u0000v\u0000e\u0000r\u0000\r\u0000 \u0000",
   "main": "app.js",
   "dependencies": {
-    "@nauma/eventemitter": "^1.0.5",
+    "@nauma/eventemitter": "^1.0.7",
     "body-parser": "^1.18.3",
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",

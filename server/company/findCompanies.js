@@ -4,5 +4,5 @@ module.exports = response => {
     
     Company.find()
     .then(companies => response.reply({ status: 200, result: companies }))
-    .catch(e => response.catch({ status: 400, result: e.message || e })) 
+    .catch(e => response.replyErr({ status: 400, result: e.message || e })) 
 }

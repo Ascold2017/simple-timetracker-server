@@ -8,7 +8,7 @@ module.exports = response => {
         let result = ''
         !data.name ? result = 'Название таска обязательно' : null
         !data.company_id ? result = 'Не выбрана компания' : null
-        return response.catch({ status: 400, result })
+        return response.replyErr({ status: 400, result })
     }
     
     Company.findById(response.data.company_id)
@@ -28,5 +28,5 @@ module.exports = response => {
         }
     })
     .then(() => response.reply({ status: 200, result: 'Таск успешно создан!' }))
-    .catch(e => response.catch({ status: 400, result: e.message }))
+    .catch(e => response.replyErr({ status: 400, result: e.message }))
 }

@@ -13,10 +13,10 @@ module.exports = response => {
     const data = response.data
 
     if (!data.userId) {
-        return response.catch({ status: 400, result: 'Пользователь не указан' })
+        return response.replyErr({ status: 400, result: 'Пользователь не указан' })
     }
     if (!data.taskId) {
-        return response.catch({ status: 400, result: 'Таск не указан' })
+        return response.replyErr({ status: 400, result: 'Таск не указан' })
     }
 
     let taskName = ''
@@ -34,5 +34,5 @@ module.exports = response => {
         .save()
     })
     .then(track =>  response.reply({ type: 'task-started', result: { message: 'Task has been started', task: { _id: track._id, name: taskName } } }))
-    .catch(e => response.catch({ type: 'error-start-task', result: e.result }))
+    .catch(e => response.replyErr({ type: 'error-start-task', result: e.result }))
 }

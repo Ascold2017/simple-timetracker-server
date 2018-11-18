@@ -6,18 +6,18 @@ module.exports = response => {
     let data = response.data
     let fillField = data.username && data.email
     if (!fillField) {
-        return response.catch({ status: 400, result: 'Не все поля заполнены!' })
+        return response.replyErr({ status: 400, result: 'Не все поля заполнены!' })
     }
     if (!data.company_id) {
-        return response.catch({ status: 400, result: 'Не выбрана компания!' })
+        return response.replyErr({ status: 400, result: 'Не выбрана компания!' })
     }
     if (data.type < 1 || data.type > 3) {
-        return response.catch({ status: 400, result: 'Не верно выбрана роль пользователя' })
+        return response.replyErr({ status: 400, result: 'Не верно выбрана роль пользователя' })
     }
 
     userEmitter.emit('create', data)
     .then(res => {
         response.reply({ result: res.result, status: 200 })
     })
-    .catch(e => response.catch(e))
+    .catch(e => response.replyErr(e))
 }
